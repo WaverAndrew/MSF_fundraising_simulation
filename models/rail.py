@@ -38,14 +38,19 @@ def _avg_donation(ask_type: AskType, choice_share_eur1: float) -> float:
     return 1.0 * choice_share_eur1 + 2.0 * (1.0 - choice_share_eur1)
 
 
-def compute_rail_monthly(inputs: RailInputs) -> pd.DataFrame:
+def compute_rail_monthly(inputs: RailInputs, months: int = 12) -> pd.DataFrame:
     total_riders = inputs.trenitalia_riders + inputs.italo_riders
     seasonality = np.array(inputs.seasonality, dtype=float)
     seasonality = seasonality / seasonality.sum()
     avg_donation = _avg_donation(inputs.ask_type, inputs.choice_share_eur1)
+    
+    # Adjust seasonality for partial year
+    if months < 12:
+        seasonality = seasonality[:months]
+        seasonality = seasonality / seasonality.sum()
 
     rows = []
-    for m in range(12):
+    for m in range(months):
         monthly_riders = total_riders * seasonality[m]
         eligible = monthly_riders * inputs.eligible_share
         exposed_digital = eligible * inputs.digital_share

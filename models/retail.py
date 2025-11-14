@@ -49,7 +49,7 @@ def _transactions(inputs: RetailInputs) -> int:
     return int(inputs.daily_receipts * inputs.stores * inputs.active_days)
 
 
-def compute_retail_monthly(inputs: RetailInputs) -> pd.DataFrame:
+def compute_retail_monthly(inputs: RetailInputs, months: int = 12) -> pd.DataFrame:
     tx = _transactions(inputs)
     expected_round = _expected_roundup(inputs)
     donors = tx * inputs.optin
@@ -59,16 +59,19 @@ def compute_retail_monthly(inputs: RetailInputs) -> pd.DataFrame:
     # simple split between online and in-store using payment mix
     online_share = inputs.payment_card_share
     in_store_share = 1.0 - online_share
+    
+    # Scale annual values to the number of months
+    months_factor = months / 12.0
 
     rows = []
-    for m in range(12):
+    for m in range(months):
         rows.extend([
-            {"month": m + 1, "year": 1, "channel": "all", "metric": "transactions", "value": tx/12.0},
-            {"month": m + 1, "year": 1, "channel": "all", "metric": "donors", "value": donors/12.0},
-            {"month": m + 1, "year": 1, "channel": "all", "metric": "gross", "value": gross/12.0},
-            {"month": m + 1, "year": 1, "channel": "all", "metric": "net", "value": net/12.0},
-            {"month": m + 1, "year": 1, "channel": "online", "metric": "net", "value": net/12.0 * online_share},
-            {"month": m + 1, "year": 1, "channel": "in_store", "metric": "net", "value": net/12.0 * in_store_share},
+            {"month": m + 1, "year": 1, "channel": "all", "metric": "transactions", "value": tx * months_factor / months},
+            {"month": m + 1, "year": 1, "channel": "all", "metric": "donors", "value": donors * months_factor / months},
+            {"month": m + 1, "year": 1, "channel": "all", "metric": "gross", "value": gross * months_factor / months},
+            {"month": m + 1, "year": 1, "channel": "all", "metric": "net", "value": net * months_factor / months},
+            {"month": m + 1, "year": 1, "channel": "online", "metric": "net", "value": net * months_factor / months * online_share},
+            {"month": m + 1, "year": 1, "channel": "in_store", "metric": "net", "value": net * months_factor / months * in_store_share},
         ])
     return pd.DataFrame(rows)
 

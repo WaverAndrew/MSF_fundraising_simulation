@@ -12,7 +12,6 @@ from utils.charts import stacked_bar_overview
 from models.rail import RailInputs, compute_rail_monthly
 from models.retail import RetailInputs, RetailMethod, compute_retail_monthly, simulate_roundup_distribution
 from models.montecarlo import run_monte_carlo
-from models.ab import sample_size_two_proportions
 
 
 st.set_page_config(page_title="MSF Micro-donations Simulator", layout="wide")
@@ -21,14 +20,52 @@ st.set_page_config(page_title="MSF Micro-donations Simulator", layout="wide")
 def init_state() -> None:
     if "assumptions" not in st.session_state:
         st.session_state.assumptions = json.loads(json.dumps(DEFAULTS))
+    if "rail_inputs" not in st.session_state:
+        st.session_state.rail_inputs = None
+    if "retail_inputs" not in st.session_state:
+        st.session_state.retail_inputs = None
+    if "months" not in st.session_state:
+        st.session_state.months = 12
 
 
-def sidebar_provenance() -> None:
-    st.sidebar.markdown("**Data provenance (key sources)**")
+
+
+def sources_tab() -> None:
+    st.subheader("Data Sources & References")
+    
+    st.markdown("""
+    This simulator uses data from multiple sources. All assumptions and defaults are based on publicly available information 
+    and industry research. Click on the links below to access the original sources.
+    """)
+    
+    st.markdown("### Key Sources")
+    
     for label, url in SOURCES.items():
-        st.sidebar.markdown(f"- [{label}]({url})")
-    st.sidebar.markdown("\n\n")
-    st.sidebar.markdown("Compliance: opt-in only, no pre-ticked boxes.")
+        st.markdown(f"- **[{label}]({url})**")
+    
+    st.markdown("---")
+    
+    st.markdown("### Compliance & Ethics")
+    st.info("""
+    **EU Consumer Rights Directive**: All donations must be opt-in only. Pre-ticked boxes for paid extras are prohibited.
+    
+    This simulator enforces compliance by ensuring all donation prompts are explicit opt-in choices, aligning with MSF's 
+    values of transparency and respect for donor autonomy.
+    """)
+    
+    st.markdown("### Notes on Data")
+    st.markdown("""
+    - **Rail data**: Based on 2023 figures from FS Group and Italo press releases. Digital share estimates are based on 
+      industry trends and FS digital growth reports.
+    
+    - **Retail data**: ISTAT household spending data (2023/2024) combined with NielsenIQ grocery statistics. 
+      Charm pricing prevalence based on academic research.
+    
+    - **Opt-in rates**: Defaults are conservative estimates based on checkout charity research and industry benchmarks. 
+      Actual rates may vary based on implementation, placement, and messaging.
+    
+    - **Payment processors**: Adyen Giving offers fee-free donations. Other processors may charge standard transaction fees.
+    """)
 
 
 def overview_tab(rail_df: pd.DataFrame, retail_df: pd.DataFrame) -> None:
@@ -37,8 +74,10 @@ def overview_tab(rail_df: pd.DataFrame, retail_df: pd.DataFrame) -> None:
     total_annual = rail_annual + retail_annual
     msf_baseline = st.session_state.assumptions["msf_italy"]["fundraising_2024_eur"]
 
+    months = st.session_state.months
+    period_label = f"Total net € ({months} month{'s' if months != 1 else ''})"
     c1, c2, c3 = st.columns(3)
-    c1.metric("Total annual net € (all initiatives)", euro(total_annual))
+    c1.metric(period_label, euro(total_annual))
     c2.metric("Rail net €", euro(rail_annual))
     c3.metric("Retail net €", euro(retail_annual))
 
@@ -63,6 +102,9 @@ def rail_tab() -> pd.DataFrame:
     st.subheader("Rail module (Trenitalia + Italo)")
 
     a = st.session_state.assumptions
+    months = st.slider("Time period (months)", min_value=1, max_value=36, value=st.session_state.months, key="rail_months")
+    st.session_state.months = months
+    
     with st.expander("Inputs", expanded=True):
         trenitalia_riders = st.number_input(
             "Trenitalia annual riders",
@@ -142,8 +184,9 @@ def rail_tab() -> pd.DataFrame:
         fee_fixed=fee_fixed,
         processor=processor,
     )
+    st.session_state.rail_inputs = inputs
 
-    monthly = compute_rail_monthly(inputs)
+    monthly = compute_rail_monthly(inputs, months=months)
 
     # Charts
     st.markdown("Funnel: Riders → Exposed → Donors → € net")
@@ -157,24 +200,6 @@ def rail_tab() -> pd.DataFrame:
     fig_line = px.line(monthly_net, x="month", y="value", title="Rail monthly net €")
     st.plotly_chart(fig_line, use_container_width=True)
 
-    # Heatmap: opt-in vs avg donation (simplified sweep)
-    st.markdown("Heatmap: Opt-in vs Avg donation → Annual € net (sweep)")
-    optins = np.linspace(0.01, 0.12, 8)
-    avg_dons = np.array([1.0, 2.0])
-    heat_data = []
-    for o in optins:
-        for d in avg_dons:
-            inputs_sweep = inputs.model_copy()
-            inputs_sweep.ask_type = f"€{int(d)} fixed"
-            inputs_sweep.optin_web_1 = o
-            inputs_sweep.optin_web_2 = o/2
-            m = compute_rail_monthly(inputs_sweep)
-            annual = m[(m["metric"]=="net") & (m["operator"]=="all")]["value"].sum()
-            heat_data.append({"optin": o, "avg": d, "annual_net": annual})
-    df_heat = pd.DataFrame(heat_data)
-    fig_heat = px.density_heatmap(df_heat, x="optin", y="avg", z="annual_net", color_continuous_scale="Blues", title="Annual net €")
-    st.plotly_chart(fig_heat, use_container_width=True)
-
     # Bars: Trenitalia vs Italo
     bars = monthly[(monthly["metric"] == "net") & (monthly["operator"] != "all")]\
         .groupby("operator")["value"].sum().reset_index()
@@ -187,6 +212,8 @@ def rail_tab() -> pd.DataFrame:
 def retail_tab() -> pd.DataFrame:
     st.subheader("Retail round-up module (Grocery & POS)")
     a = st.session_state.assumptions
+    months = st.slider("Time period (months)", min_value=1, max_value=36, value=st.session_state.months, key="retail_months")
+    st.session_state.months = months
 
     with st.expander("Inputs", expanded=True):
         method_label = st.radio("Estimation method", ["Market-top-down", "Retailer-direct"], index=0, key="retail_method")
@@ -241,8 +268,9 @@ def retail_tab() -> pd.DataFrame:
         triangular_max=roundup_max,
         payment_card_share=payment_card_share,
     )
+    st.session_state.retail_inputs = inputs
 
-    monthly = compute_retail_monthly(inputs)
+    monthly = compute_retail_monthly(inputs, months=months)
 
     st.markdown("Histogram of simulated round-up per transaction (10k samples)")
     samples = simulate_roundup_distribution(inputs, n=10000, seed=42)
@@ -267,7 +295,16 @@ def sensitivity_tab(rail_df: pd.DataFrame, retail_df: pd.DataFrame) -> None:
     st.subheader("Sensitivity")
     mc_toggle = st.checkbox("Run Monte Carlo (fast)", value=False)
     if mc_toggle:
-        results = run_monte_carlo(st.session_state.assumptions, iterations=2000, seed=123)
+        if st.session_state.rail_inputs is None or st.session_state.retail_inputs is None:
+            st.warning("Please configure Rail and Retail tabs first to run Monte Carlo.")
+            return
+        results = run_monte_carlo(
+            st.session_state.rail_inputs,
+            st.session_state.retail_inputs,
+            st.session_state.months,
+            iterations=2000,
+            seed=123
+        )
         fig = px.histogram(results, x="total_net", nbins=60, title="Monte Carlo distribution of total net €")
         st.plotly_chart(fig, use_container_width=True)
         perc = np.percentile(results["total_net"], [5, 50, 95])
@@ -277,23 +314,6 @@ def sensitivity_tab(rail_df: pd.DataFrame, retail_df: pd.DataFrame) -> None:
         c3.metric("95th %", euro(perc[2]))
     else:
         st.info("Use Monte Carlo toggle to explore uncertainty bands.")
-
-
-def ab_tab() -> None:
-    st.subheader("A/B Testing Lab")
-    baseline = st.number_input("Baseline conversion (e.g. 0.04)", min_value=0.0001, max_value=1.0, value=0.04)
-    mde = st.number_input("Minimum detectable effect (absolute, e.g. 0.005)", min_value=0.0001, max_value=1.0, value=0.005)
-    power = st.number_input("Power", min_value=0.5, max_value=0.99, value=0.8)
-    alpha = st.number_input("Alpha", min_value=0.001, max_value=0.2, value=0.05)
-    variants = st.slider("Number of variants (A + B...)", 2, 4, 2)
-    post_payment = st.checkbox("Post-payment prompt (Adyen supports both)", value=False)
-
-    n = sample_size_two_proportions(baseline, baseline + mde, alpha=alpha, power=power)
-    df = pd.DataFrame({"variant": [f"V{i+1}" for i in range(variants)], "required_n": [int(np.ceil(n))]*variants})
-    st.dataframe(df, use_container_width=True)
-    fig = px.bar(df, x="variant", y="required_n", title="Required sample size per variant")
-    st.plotly_chart(fig, use_container_width=True)
-    st.caption("Two-proportion Z-test power analysis.")
 
 
 def assumptions_tab() -> None:
@@ -393,9 +413,8 @@ def download_tab(rail_df: pd.DataFrame, retail_df: pd.DataFrame) -> None:
 
 def main() -> None:
     init_state()
-    sidebar_provenance()
 
-    tabs = st.tabs(["Overview", "Rail", "Retail", "Sensitivity", "A/B Lab", "Assumptions", "Download"])
+    tabs = st.tabs(["Overview", "Rail", "Retail", "Sensitivity", "Assumptions", "Sources", "Download"])
 
     # Compute base scenario for Overview
     with tabs[1]:
@@ -407,9 +426,9 @@ def main() -> None:
     with tabs[3]:
         sensitivity_tab(rail_df, retail_df)
     with tabs[4]:
-        ab_tab()
-    with tabs[5]:
         assumptions_tab()
+    with tabs[5]:
+        sources_tab()
     with tabs[6]:
         download_tab(rail_df, retail_df)
 

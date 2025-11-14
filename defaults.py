@@ -35,16 +35,16 @@ DEFAULTS = {
 }
 
 SOURCES = {
-    "MSF Italy Bilancio 2024": "https://www.medicisenzafrontiere.it/",
-    "FS Group riders 2023": "https://www.fsitaliane.it/",
-    "Italo riders 2023/2024": "https://www.italotreno.it/",
-    "EU Consumer Rights Directive": "https://eur-lex.europa.eu/",
-    "Adyen Giving": "https://www.adyen.com/",
-    "Checkout charity coverage (NPR/AP)": "https://apnews.com/",
-    "NielsenIQ grocery stats": "https://nielseniq.com/",
-    "Charm pricing prevalence": "https://en.wikipedia.org/wiki/Psychological_pricing",
-    "Payments landscape (ECB/BoI)": "https://www.ecb.europa.eu/",
-    "Nexi ‘Dona Italia’": "https://www.nexi.it/",
+    "MSF Italy Bilancio 2024": "https://www.medicisenzafrontiere.it/chi-siamo/bilancio/",
+    "FS Group riders 2023": "https://www.quotidiano.net/economia/in-aumento-del-18-i-passeggeri-nel-2023-dc6625c3",
+    "Italo riders 2023/2024": "https://www.ttgitalia.com/focus/trasporti/189187-italo-nel-2023-tagliato-il-traguardo-dei-25-milioni-di-passeggeri-KATG399377",
+    "EU Consumer Rights Directive": "https://commission.europa.eu/law/law-topic/consumer-protection-law/consumer-contract-law/consumer-rights-directive_en",
+    "Adyen Giving": "https://docs.adyen.com/online-payments/donations/",
+    "Checkout charity coverage (NPR/AP)": "https://www.vpm.org/npr-news/npr-news/2024-03-10/that-spare-change-you-donate-at-checkout-is-adding-up-to-millions-for-charities",
+    "NielsenIQ grocery stats": "https://www.alimentando.info/lo-scontrino-medio-nel-grocery-di-2512-euro-e-quasi-stabile-dice-nielseniq-il-target-over-55-gioca-la-parte-del-leone/",
+    "Charm pricing prevalence": "https://mpra.ub.uni-muenchen.de/78085/",
+    "Payments landscape (ECB/BoI)": "https://www.bancaditalia.it/media/notizia/la-bce-pubblica-i-risultati-dell-ultimo-studio-sulle-abitudini-di-pagamento-dei-consumatori-nell-area-dell-euro/",
+    "Nexi ‘Dona Italia’": "https://www.nexigroup.com/it/media-relations/news/2025/07/dona-italia/",
 }
 
 LANGUAGE = {
