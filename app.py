@@ -74,28 +74,36 @@ def overview_tab(rail_df: pd.DataFrame, retail_df: pd.DataFrame) -> None:
     total_annual = rail_annual + retail_annual
     msf_baseline = st.session_state.assumptions["msf_italy"]["fundraising_2024_eur"]
 
+    retail_only = st.checkbox("Show retail-only scenario", value=False, key="overview_retail_only")
+    display_total = retail_annual if retail_only else total_annual
     months = st.session_state.months
     period_label = f"Total net € ({months} month{'s' if months != 1 else ''})"
+
     c1, c2, c3 = st.columns(3)
-    c1.metric(period_label, euro(total_annual))
-    c2.metric("Rail net €", euro(rail_annual))
-    c3.metric("Retail net €", euro(retail_annual))
+    c1.metric(period_label, euro(display_total))
+    rail_label = "Rail net €" + (" (excluded)" if retail_only else "")
+    retail_label = "Retail net €" + (" (included)" if retail_only else "")
+    c2.metric(rail_label, euro(rail_annual))
+    c3.metric(retail_label, euro(retail_annual))
 
     st.markdown(
         "A soft, explicit opt-in at checkout aligns with MSF's ethics and donor experience."
     )
 
-    share = (total_annual / msf_baseline) if msf_baseline > 0 else 0
+    share = (display_total / msf_baseline) if msf_baseline > 0 else 0
     st.metric("% of MSF Italy fundraising 2024", pct(share))
 
     fig = stacked_bar_overview(
-        rail=rail_annual,
+        rail=0 if retail_only else rail_annual,
         retail=retail_annual,
         baseline=msf_baseline,
     )
     st.plotly_chart(fig, use_container_width=True)
 
-    st.info("Compliance: opt-in donations only. No pre-ticked boxes (EU directive).")
+    if retail_only:
+        st.info("Retail-only scenario: rail contribution excluded from totals above.")
+    else:
+        st.info("Compliance: opt-in donations only. No pre-ticked boxes (EU directive).")
 
 
 def rail_tab() -> pd.DataFrame:
@@ -295,13 +303,27 @@ def sensitivity_tab(rail_df: pd.DataFrame, retail_df: pd.DataFrame) -> None:
     st.subheader("Sensitivity")
     mc_toggle = st.checkbox("Run Monte Carlo (fast)", value=False)
     if mc_toggle:
-        if st.session_state.rail_inputs is None or st.session_state.retail_inputs is None:
-            st.warning("Please configure Rail and Retail tabs first to run Monte Carlo.")
+        scenario = st.radio(
+            "Scenario focus",
+            ["Combined (rail + retail)", "Retail only"],
+            key="mc_scenario_focus",
+            horizontal=True,
+        )
+        include_rail = scenario == "Combined (rail + retail)"
+        include_retail = True
+
+        if include_rail and st.session_state.rail_inputs is None:
+            st.warning("Please configure the Rail tab first to include rail in Monte Carlo.")
+            return
+        if include_retail and st.session_state.retail_inputs is None:
+            st.warning("Please configure the Retail tab first to include retail in Monte Carlo.")
             return
         results = run_monte_carlo(
             st.session_state.rail_inputs,
             st.session_state.retail_inputs,
             st.session_state.months,
+            include_rail=include_rail,
+            include_retail=include_retail,
             iterations=2000,
             seed=123
         )
@@ -312,6 +334,7 @@ def sensitivity_tab(rail_df: pd.DataFrame, retail_df: pd.DataFrame) -> None:
         c1.metric("5th %", euro(perc[0]))
         c2.metric("Median", euro(perc[1]))
         c3.metric("95th %", euro(perc[2]))
+        st.caption("Scenario: {}".format("Retail only" if not include_rail else "Rail + Retail combined"))
     else:
         st.info("Use Monte Carlo toggle to explore uncertainty bands.")
 

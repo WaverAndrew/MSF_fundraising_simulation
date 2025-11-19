@@ -1,6 +1,7 @@
 # MSF Micro-donations Simulator - Complete User Guide
 
 ## Table of Contents
+
 1. [Introduction](#introduction)
 2. [Getting Started](#getting-started)
 3. [Understanding the Tabs](#understanding-the-tabs)
@@ -32,7 +33,8 @@ The MSF Micro-donations Simulator is a web-based calculator that helps you estim
 
 **Opt-in**: People must actively choose to donate. The donation box cannot be pre-checked (this is required by EU law).
 
-**Net vs Gross**: 
+**Net vs Gross**:
+
 - **Gross** = Total money donated
 - **Net** = Money after payment processing fees are deducted
 - Example: If €100 is donated and fees are 1.4%, gross = €100, net = €98.60
@@ -85,11 +87,13 @@ The application has 7 tabs at the top:
 **What You'll See**:
 
 1. **Three Key Numbers (at the top)**:
+
    - **Total net €**: Combined revenue from both initiatives for your time period
    - **Rail net €**: Revenue from train ticket donations only
    - **Retail net €**: Revenue from grocery round-ups only
 
 2. **Percentage of MSF Italy 2024 Fundraising**:
+
    - Shows what percentage your projected revenue represents compared to MSF Italy's total 2024 fundraising (€79.9M)
    - Example: If you see "2.5%", that means your projections equal 2.5% of MSF Italy's 2024 total
 
@@ -126,8 +130,9 @@ At the top, you'll see a slider: **"Time period (months)"**
 #### Inputs Section (Click to expand/collapse)
 
 All the settings you can adjust are in the "Inputs" section. Here's what each one means:
-s
+
 ##### 1. Trenitalia Annual Riders
+
 - **What it is**: Total number of people who ride Trenitalia trains in one year
 - **Default**: 470,000,000 (470 million)
 - **Source**: Based on 2023 FS Group data
@@ -135,6 +140,7 @@ s
 - **Tip**: If you have more recent data, update this number
 
 ##### 2. Italo Annual Riders
+
 - **What it is**: Total number of people who ride Italo trains in one year
 - **Default**: 22,000,000 (22 million)
 - **Source**: Based on 2023 Italo data
@@ -142,6 +148,7 @@ s
 - **Warning**: If you enter more than 40 million, you'll see a warning to double-check your numbers
 
 ##### 3. % of Purchases via App/Web
+
 - **What it is**: What percentage of tickets are bought online or through mobile apps (vs. at station counters)
 - **Default**: 65%
 - **Why it matters**: Donations are typically only shown for online/app purchases, not at physical counters
@@ -149,12 +156,14 @@ s
 - **Warning**: If you set it below 20% or above 95%, you'll see a warning that this is unusual
 
 ##### 4. % of Tickets Where Donation UI is Shown
+
 - **What it is**: Even for online purchases, the donation prompt might not appear on every screen (e.g., some ticket types might skip it)
 - **Default**: 90%
 - **How to change**: Drag the slider
 - **Tip**: 90% is a reasonable assumption - you might show it on most but not all ticket types
 
 ##### 5. Ask Type
+
 - **What it is**: How much you ask people to donate
 - **Options**:
   - **€1 fixed**: Always ask for exactly €1
@@ -169,11 +178,13 @@ s
 These are the most important numbers - they determine how many people actually donate:
 
 - **Web/App opt-in for €1**: What % of people who see a €1 ask actually donate
+
   - **Default**: 4%
   - **Range**: 0% to 100%
   - **Reality check**: Research shows 2-6% is typical for checkout charity
 
 - **Web/App opt-in for €2**: What % of people who see a €2 ask actually donate
+
   - **Default**: 2%
   - **Why lower?**: People are less likely to donate larger amounts
   - **Reality check**: Usually about half the rate of €1 donations
@@ -270,6 +281,7 @@ Same as Rail tab - sets how many months to simulate (1-36).
 Choose how to calculate the number of transactions:
 
 - **Market-top-down (default)**: Start with total household spending, then calculate transactions
+
   - **Use this if**: You want to estimate based on overall market data
   - **Requires**: Household spending data and number of households
 
@@ -282,17 +294,20 @@ Choose how to calculate the number of transactions:
 If you chose "Market-top-down":
 
 - **ISTAT Monthly Household Spend (€)**:
+
   - **What it is**: Average amount an Italian household spends per month
   - **Default**: €2,738 (2023 data)
   - **Source**: ISTAT (Italian national statistics)
   - **Alternative**: You can use €2,755 for 2024 data
 
 - **% Household Spend on Grocery**:
+
   - **What it is**: What portion of household spending goes to groceries
   - **Default**: 18%
   - **How to change**: Drag the slider
 
 - **Average Receipt (€)**:
+
   - **What it is**: Average amount per grocery shopping trip
   - **Default**: €25.12
   - **Source**: NielsenIQ 2024 grocery statistics
@@ -309,11 +324,13 @@ If you chose "Market-top-down":
 If you chose "Retailer-direct":
 
 - **Daily Receipts (per store)**:
+
   - **What it is**: Average number of transactions per store per day
   - **Default**: 500
   - **How to get**: Ask the retailer for their average daily transaction count
 
 - **Stores**:
+
   - **What it is**: Number of stores participating
   - **Default**: 100
   - **How to use**: Enter the actual number of stores
@@ -394,10 +411,12 @@ Same as Rail tab - choose Adyen Giving (0% fees) or Stripe/Nexi (custom fees).
 #### How the Calculation Works
 
 1. **Calculate transactions**:
+
    - **Top-down**: (Households × Monthly spend × 12 × Grocery %) ÷ Average receipt
    - **Direct**: Daily receipts × Stores × Active days
 
 2. **Calculate average round-up**:
+
    - Expected round-up = (0.01 + 0.50 + 0.99) ÷ 3 × Charm prevalence
    - Default: ~€0.50 × 80% = €0.40 average
 
@@ -416,6 +435,7 @@ Same as Rail tab - choose Adyen Giving (0% fees) or Stripe/Nexi (custom fees).
 #### What is Sensitivity Analysis?
 
 Real-world results won't match your exact assumptions. Sensitivity analysis shows you:
+
 - **Best case**: If things go better than expected
 - **Worst case**: If things go worse than expected
 - **Most likely**: The middle ground
@@ -439,16 +459,19 @@ Real-world results won't match your exact assumptions. Sensitivity analysis show
 #### How to Interpret Results
 
 **Example**: If you see:
+
 - 5th %: €500,000
 - Median: €750,000
 - 95th %: €1,200,000
 
 This means:
+
 - **Worst case (5%)**: You'll likely raise at least €500,000
 - **Most likely (median)**: You'll probably raise around €750,000
 - **Best case (95%)**: You might raise up to €1,200,000, but don't count on it
 
 **What gets randomized**:
+
 - Opt-in rates (slightly higher or lower)
 - Seasonality (some months busier than expected)
 - Digital share (more or fewer online purchases)
@@ -456,6 +479,7 @@ This means:
 - Round-up amounts (people round up more or less)
 
 **Use this tab to**:
+
 - Present realistic ranges to stakeholders (not just one number)
 - Understand risk and uncertainty
 - Plan for different scenarios
@@ -484,6 +508,7 @@ This means:
 ##### 2. Rail Defaults
 
 All the default values for the Rail tab:
+
 - Trenitalia riders
 - Italo riders
 - Digital share %
@@ -496,6 +521,7 @@ All the default values for the Rail tab:
 ##### 3. Retail Defaults
 
 All the default values for the Retail tab:
+
 - ISTAT monthly spend (2023 and 2024)
 - Grocery share %
 - Average receipt
@@ -529,6 +555,7 @@ All the default values for the Retail tab:
 #### What You'll Find
 
 1. **Key Sources**: Clickable links to all data sources used in the simulator:
+
    - MSF Italy financial reports
    - Train ridership statistics
    - ISTAT household spending data
@@ -538,6 +565,7 @@ All the default values for the Retail tab:
    - EU Consumer Rights Directive
 
 2. **Compliance & Ethics Section**:
+
    - Explanation of EU Consumer Rights Directive
    - Why opt-in is required (no pre-ticked boxes)
    - How this aligns with MSF values
@@ -620,7 +648,8 @@ All the default values for the Retail tab:
   - Include in reports
   - Quick reference document
 
-**How to use**: 
+**How to use**:
+
 1. Click "Generate one-pager PDF"
 2. Wait a moment for generation
 3. Click "Download one-pager.pdf"
@@ -643,6 +672,7 @@ All the default values for the Retail tab:
 **Goal**: Get a fast estimate of potential revenue
 
 **Steps**:
+
 1. Open the app
 2. Go to **Rail tab** - accept all defaults, just note the "Rail net €" number
 3. Go to **Retail tab** - accept all defaults, just note the "Retail net €" number
@@ -658,6 +688,7 @@ All the default values for the Retail tab:
 **Goal**: Create a comprehensive projection with your specific assumptions
 
 **Steps**:
+
 1. **Set time period**: In Rail tab, set months (e.g., 12 for one year)
 2. **Configure Rail**:
    - Update rider numbers if you have current data
@@ -683,6 +714,7 @@ All the default values for the Retail tab:
 **Goal**: Test "conservative" vs. "optimistic" assumptions
 
 **Steps**:
+
 1. **Create conservative scenario**:
    - Set lower opt-in rates (e.g., 3% instead of 5%)
    - Use lower rider numbers
@@ -704,6 +736,7 @@ All the default values for the Retail tab:
 **Goal**: Refresh projections with latest statistics
 
 **Steps**:
+
 1. Go to **Assumptions tab**
 2. Update relevant defaults:
    - New rider numbers? Update Rail defaults
@@ -728,7 +761,8 @@ All the default values for the Retail tab:
 
 **Why it matters**: This is what you can actually spend
 
-**Example**: 
+**Example**:
+
 - Gross donations: €1,000,000
 - Fees (1.4%): €14,000
 - Net revenue: €986,000
@@ -739,7 +773,8 @@ All the default values for the Retail tab:
 
 **Why it matters**: Shows the scale and impact of the initiative
 
-**Example**: 
+**Example**:
+
 - Your projection: €2,000,000
 - MSF Italy 2024: €79,900,000
 - Percentage: 2.5%
@@ -753,6 +788,7 @@ All the default values for the Retail tab:
 **Why it matters**: Small changes in opt-in rate create large changes in revenue
 
 **Example** (Rail, 470M riders, €1 ask):
+
 - 2% opt-in: €9.4M gross
 - 4% opt-in: €18.8M gross (double!)
 - 6% opt-in: €28.2M gross (triple!)
@@ -766,6 +802,7 @@ All the default values for the Retail tab:
 **Why it matters**: 6 months = roughly half of 12 months revenue
 
 **Example**:
+
 - 12 months: €1,000,000
 - 6 months: ~€500,000
 - 24 months: ~€2,000,000
@@ -831,11 +868,13 @@ All the default values for the Retail tab:
 ### Problem: "Numbers don't make sense"
 
 **Possible causes**:
+
 - Time period mismatch (check months setting)
 - Forgot to configure Rail or Retail tabs
 - Using wrong estimation method in Retail
 
 **Solution**:
+
 1. Check time period slider in Rail/Retail tabs
 2. Make sure you've entered inputs in both tabs
 3. Verify you're using the right method (top-down vs. direct)
@@ -847,6 +886,7 @@ All the default values for the Retail tab:
 **This is normal!** Monte Carlo randomizes assumptions, so results will vary.
 
 **What to check**:
+
 - Median should be close to your deterministic calculation
 - If median is very different, check that you've configured Rail and Retail tabs first
 - The range (5th to 95th percentile) shows uncertainty - wider range = more uncertainty
@@ -856,10 +896,12 @@ All the default values for the Retail tab:
 ### Problem: "Can't download PDF"
 
 **Possible causes**:
+
 - PDF library not installed
 - Browser blocking download
 
 **Solution**:
+
 - Use chart download buttons (camera icon) to save images
 - Combine with CSV files manually
 - Or use the CSV files directly in Excel/Google Sheets
@@ -869,11 +911,13 @@ All the default values for the Retail tab:
 ### Problem: "Opt-in rates seem too high/low"
 
 **Check**:
+
 - Research shows 2-6% is typical for checkout charity
 - 4% for €1 and 2% for €2 are reasonable defaults
 - If you see warnings about "aggressive assumptions," consider lowering
 
 **Solution**:
+
 - Use sensitivity analysis to see impact of different rates
 - Research similar programs for benchmarks
 - Start conservative, adjust based on pilot results
@@ -883,11 +927,13 @@ All the default values for the Retail tab:
 ### Problem: "Seasonality doesn't seem to work"
 
 **Check**:
+
 - Make sure you've set multipliers for all 12 months
 - Values should be around 1.0 (0.8 to 1.2 is typical)
 - The app automatically normalizes, so total still equals annual riders
 
 **Solution**:
+
 - Set summer months (June-August) to 1.1-1.2
 - Set winter months (January) to 0.8-0.9
 - Keep other months around 1.0
@@ -897,11 +943,13 @@ All the default values for the Retail tab:
 ### Problem: "Retail calculations seem wrong"
 
 **Check**:
+
 - Are you using top-down or direct method?
 - If top-down: Do you have the right number of households?
 - If direct: Are daily receipts realistic? (500/day = ~20/hour for 24-hour store)
 
 **Solution**:
+
 - Verify your input numbers make sense
 - Check that transactions = (annual grocery spend) ÷ (avg receipt)
 - Or transactions = (daily receipts) × (stores) × (active days)
@@ -937,6 +985,7 @@ All the default values for the Retail tab:
 ## Final Notes
 
 This simulator is a **planning tool**, not a guarantee. Actual results will depend on:
+
 - Implementation quality (how well the donation prompt is designed)
 - User experience (how easy it is to donate)
 - Messaging (how compelling the ask is)
@@ -944,6 +993,7 @@ This simulator is a **planning tool**, not a guarantee. Actual results will depe
 - Partnership execution (how well the integration works)
 
 **Best practice**: Use this tool to:
+
 - Set realistic expectations
 - Compare different options
 - Plan for different scenarios
@@ -956,6 +1006,7 @@ But always remember: **Start with a pilot, measure real results, and adjust base
 ## Getting Help
 
 If you have questions or issues:
+
 1. Check this guide first
 2. Review the Sources tab for data references
 3. Check the Assumptions tab to understand defaults
@@ -965,5 +1016,4 @@ If you have questions or issues:
 
 ---
 
-*Last updated: Based on app version with 7 tabs (Overview, Rail, Retail, Sensitivity, Assumptions, Sources, Download)*
-
+_Last updated: Based on app version with 7 tabs (Overview, Rail, Retail, Sensitivity, Assumptions, Sources, Download)_
