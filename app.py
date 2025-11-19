@@ -286,9 +286,16 @@ def retail_tab() -> pd.DataFrame:
     fig_hist.update_xaxes(title_text="€ per transaction")
     st.plotly_chart(fig_hist, use_container_width=True)
 
-    st.markdown("Waterfall: transactions → opted-in → gross € → net of fees")
-    wf = monthly.groupby("metric")["value"].sum().reindex(["transactions", "donors", "gross", "net"]).reset_index()
-    fig_wf = px.bar(wf, x="metric", y="value", title="Annual flow (retail)")
+    st.markdown("Funnel: transactions → opted-in → gross € → net of fees")
+    funnel_metrics = ["transactions", "donors", "gross", "net"]
+    wf = (
+        monthly[(monthly["channel"] == "all") & (monthly["metric"].isin(funnel_metrics))]
+        .groupby("metric")["value"]
+        .sum()
+        .reindex(funnel_metrics)
+        .reset_index()
+    )
+    fig_wf = px.funnel(wf, y="metric", x="value", title="Retail funnel (annual)")
     st.plotly_chart(fig_wf, use_container_width=True)
 
     scenario = monthly[(monthly["metric"] == "net") & (monthly["channel"].isin(["in_store", "online"]))] \
