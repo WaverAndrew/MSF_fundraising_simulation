@@ -70,7 +70,7 @@ def sources_tab() -> None:
 
 def overview_tab(rail_df: pd.DataFrame, retail_df: pd.DataFrame) -> None:
     rail_annual = rail_df[rail_df["metric"] == "net"].groupby("year")["value"].sum().sum()
-    retail_annual = retail_df[retail_df["metric"] == "net"].groupby("year")["value"].sum().sum()
+    retail_annual = retail_df[(retail_df["metric"] == "net") & (retail_df["channel"] == "all")].groupby("year")["value"].sum().sum()
     total_annual = rail_annual + retail_annual
     msf_baseline = st.session_state.assumptions["msf_italy"]["fundraising_2024_eur"]
 
@@ -427,7 +427,7 @@ def download_tab(rail_df: pd.DataFrame, retail_df: pd.DataFrame) -> None:
             c.drawString(2*cm, height-2*cm, "MSF Micro-donations Simulator – One-pager")
 
             rail_annual = rail_df[rail_df["metric"] == "net"]["value"].sum()
-            retail_annual = retail_df[retail_df["metric"] == "net"]["value"].sum()
+            retail_annual = retail_df[(retail_df["metric"] == "net") & (retail_df["channel"] == "all")]["value"].sum()
             total = rail_annual + retail_annual
             c.setFont("Helvetica", 11)
             c.drawString(2*cm, height-3*cm, f"Rail net €: {euro(rail_annual)}")
