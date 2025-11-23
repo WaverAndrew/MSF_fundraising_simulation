@@ -62,7 +62,7 @@ def run_monte_carlo(
             retail_inputs_mc.charm_prevalence = prevalence
 
             retail_df = compute_retail_monthly(retail_inputs_mc, months=months)
-            total_net += retail_df[retail_df["metric"] == "net"]["value"].sum()
+            total_net += retail_df[(retail_df["metric"] == "net") & (retail_df["channel"] == "all")]["value"].sum()
 
         results.append({"total_net": float(total_net)})
 
