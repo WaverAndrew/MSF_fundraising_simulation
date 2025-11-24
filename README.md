@@ -1,5 +1,7 @@
 # MSF Micro-donations Simulator
 
+URL: https://msf-project-bocconi.streamlit.app
+
 A production-ready Streamlit application for modeling potential revenue from micro-donation initiatives for Medici Senza Frontiere (MSF) Italia. The simulator evaluates two key initiatives:
 
 1. **Rail micro-donations**: Opt-in €1/€2 donations during Trenitalia/Italo ticket checkout
